@@ -70,6 +70,7 @@ class AverageMeter(object):
         self.count += n
         self.avg = self.sum / self.count
 
+
 def main():
     args = parser.parse_args()
     save_folder = args.save_folder
@@ -190,7 +191,14 @@ def main():
             seq_length = out.size(0)
             sizes = Variable(input_percentages.mul_(int(seq_length)).int())
 
+            if args.cuda:
+                out = out.cpu().float()
+
             loss = criterion(out, targets, sizes, target_sizes)
+
+            if args.cuda:
+                loss = loss.cuda().float()
+
             loss = loss / inputs.size(0)  # average the loss by minibatch
 
             loss_sum = loss.data.sum()
